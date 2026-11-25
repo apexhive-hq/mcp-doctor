@@ -1,0 +1,22 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - configPath
+    properties:
+      configPath:
+        type: string
+        description: Path to mcp-doctor upstream MCP servers JSON config
+        default: cli/mcp-doctor.config.example.json
+  commandFunction: |-
+    (config) => ({
+      command: 'node',
+      args: [
+        'cli/dist/src/cli.js',
+        'audit',
+        '--config',
+        config.configPath || 'cli/mcp-doctor.config.example.json',
+        '--json'
+      ]
+    })

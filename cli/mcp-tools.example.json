@@ -1,0 +1,37 @@
+{
+  "tools": [
+    {
+      "name": "search_docs",
+      "description": "Search workspace documentation by keyword and return matching snippets.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Search query text" },
+          "limit": { "type": "number", "description": "Maximum results (1-20)" }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "read_schema",
+      "description": "Inspect the JSON Schema definition for a named data model.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "modelName": { "type": "string", "description": "Model identifier" }
+        },
+        "required": ["modelName"]
+      }
+    },
+    {
+      "name": "list_endpoints",
+      "description": "List available API routes and HTTP methods for the current service.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prefix": { "type": "string", "description": "Optional route prefix filter" }
+        }
+      }
+    }
+  ]
+}

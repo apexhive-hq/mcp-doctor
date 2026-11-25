@@ -1,0 +1,9 @@
+{
+  "servers": [
+    {
+      "name": "demo-clean",
+      "command": "node",
+      "args": ["./dist/tests/fixtures/mock-doctor-mcp.js", "--mode=clean"]
+    }
+  ]
+}

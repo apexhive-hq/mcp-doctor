@@ -1,0 +1,7 @@
+{
+  "minScore": 80,
+  "failOnSeverity": "HIGH",
+  "blockPromptInjection": true,
+  "maxTotalTokens": 12000,
+  "denyTools": ["*:delete_*", "*:exec_*"]
+}

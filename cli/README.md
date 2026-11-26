@@ -1,16 +1,18 @@
 # `apexhive-mcp-doctor` CLI (`mcp-doctor`)
 
-> 100% Free MIT static linter for Model Context Protocol (MCP) tool catalogs: prompt-injection pattern checks, secret-leak scanning, schema linting, context-tax measurement, CI policy gates, and SARIF 2.1.0 output (`Node.js >= 24`).
+> 100% Free MIT static linter for Model Context Protocol (MCP) tool catalogs: prompt-injection pattern checks, secret-leak scanning, schema linting, context-tax measurement, CI policy gates, and SARIF 2.1.0 output (`Node.js >= 20`).
 
 ---
 
-## Quickstart (`Node.js >= 24.0.0`)
+## Quickstart (`Node.js >= 20.0.0`)
 
 ### Instant Run via npm (`npx`)
 
 ```bash
+npx -y apexhive-mcp-doctor --version
 npx -y apexhive-mcp-doctor status
-npx -y apexhive-mcp-doctor audit --tools-file mcp-tools.example.json
+npx -y apexhive-mcp-doctor audit --tools-file ./tools.json
+npx -y apexhive-mcp-doctor audit --config ./mcp-servers.json
 ```
 
 ### Build from Source
@@ -34,4 +36,4 @@ node dist/src/cli.js audit --tools-file mcp-tools.example.json --ci --min-score 
 
 ---
 
-Tips (Base USDC): `0x32eceaC45DBED9E555dAb80346aBd4Ab9C676206` · Support: `apexhive.hq@proton.me`.
+License: MIT · Support: `apexhive.hq@proton.me`.

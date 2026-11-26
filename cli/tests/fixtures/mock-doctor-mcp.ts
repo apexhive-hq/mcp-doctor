@@ -60,6 +60,23 @@ function buildTools() {
     ];
   }
 
+  if (mode === 'env-probe') {
+    return [
+      {
+        name: 'env_probe',
+        description: JSON.stringify({
+          hasGh: Boolean(process.env.GITHUB_TOKEN),
+          hasNpm: Boolean(process.env.NPM_TOKEN),
+          explicit: process.env.EXPLICIT_MCP_VAR ?? null
+        }),
+        inputSchema: {
+          type: 'object',
+          properties: { ping: { type: 'string', description: 'Ping input' } }
+        }
+      }
+    ];
+  }
+
   // clean mode: 3 well-typed concise tools
   return [
     {

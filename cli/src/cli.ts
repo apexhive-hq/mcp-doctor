@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
-import { auditMcpTools, toSarifReport } from './auditor.js';
+import { auditMcpTools, parseTeamPolicy, toSarifReport } from './auditor.js';
 import { introspectStdioServers, loadServerSpecsFromConfig } from './stdio-client.js';
 import type { AuditReport, McpToolInput, TeamPolicyConfig } from './types.js';
+import { MCP_DOCTOR_VERSION } from './version.js';
 
-function getFlagValue(args: string[], flag: string): string | undefined {
+function getRequiredFlagValue(args: string[], flag: string): string | undefined {
   const idx = args.indexOf(flag);
-  if (idx >= 0 && idx + 1 < args.length) return args[idx + 1];
-  return undefined;
+  if (idx < 0) return undefined;
+  const val = args[idx + 1];
+  if (val === undefined || val.startsWith('--')) {
+    throw new Error(`${flag} requires a value.`);
+  }
+  return val;
 }
 
 function loadToolsFile(filePath: string): McpToolInput[] {
@@ -38,19 +43,21 @@ function formatHumanReport(report: AuditReport): string {
 }
 
 function printHelp(): void {
-  console.log(`mcp-doctor v1.0.1 — Free MIT MCP Security, Secret-Leak & Context-Tax Linter
+  console.log(`mcp-doctor v${MCP_DOCTOR_VERSION} — Free MIT MCP Security, Secret-Leak & Context-Tax Linter
 
 Usage:
   mcp-doctor audit (--config <mcp-servers.json> | --tools-file <tools.json>) [options]
   mcp-doctor status
+  mcp-doctor --version
   mcp-doctor --help
 
 Options:
   --policy <policy.json>   Apply TeamPolicyConfig thresholds & deny globs
   --sarif                  Emit SARIF 2.1.0 JSON report
   --json                   Emit AuditReport JSON
-  --ci                     Exit non-zero if score < min-score or CRITICAL findings exist
+  --ci                     Exit non-zero if policy fails, score < min-score, or CRITICAL findings exist
   --min-score <0-100>      Minimum passing score for --ci (default: 70)
+  --version, -v            Print CLI version
 `);
 }
 
@@ -62,13 +69,18 @@ async function main() {
     return;
   }
 
+  if (cmd === '--version' || cmd === '-v' || cmd === '-V' || args.includes('--version') || args.includes('-v')) {
+    console.log(MCP_DOCTOR_VERSION);
+    return;
+  }
+
   if (cmd === 'status') {
     console.log(
       JSON.stringify(
         {
           mode: 'open-source-mit',
           license: 'MIT',
-          version: '1.0.1',
+          version: MCP_DOCTOR_VERSION,
           features: ['audit', 'sarif', 'policy', 'ci-gate']
         },
         null,
@@ -79,33 +91,54 @@ async function main() {
   }
 
   if (cmd !== 'audit') {
-    console.error('Usage: mcp-doctor <audit|status|--help> [options]');
+    console.error('Usage: mcp-doctor <audit|status|--version|--help> [options]');
     process.exit(1);
   }
 
-  const configPath = getFlagValue(args, '--config');
-  const toolsFile = getFlagValue(args, '--tools-file');
-  const policyPath = getFlagValue(args, '--policy');
+  const configPath = getRequiredFlagValue(args, '--config');
+  const toolsFile = getRequiredFlagValue(args, '--tools-file');
+  const policyPath = getRequiredFlagValue(args, '--policy');
   const isJson = args.includes('--json');
   const isSarif = args.includes('--sarif');
   const isCi = args.includes('--ci');
-  const minScoreRaw = getFlagValue(args, '--min-score');
-  const minScore = minScoreRaw !== undefined ? Number(minScoreRaw) : 70;
+  const minScoreRaw = getRequiredFlagValue(args, '--min-score');
+
+  let minScoreProvided = false;
+  let minScore = 70;
+  if (minScoreRaw !== undefined) {
+    minScoreProvided = true;
+    const parsedScore = Number(minScoreRaw.trim());
+    if (minScoreRaw.trim() === '' || !Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > 100) {
+      console.error('--min-score must be a finite number between 0 and 100.');
+      process.exit(1);
+    }
+    minScore = parsedScore;
+  }
 
   if (!configPath && !toolsFile) {
     console.error('Provide either --config <mcp-servers.json> or --tools-file <tools.json>.');
     process.exit(1);
   }
 
-  const policy = policyPath
-    ? (JSON.parse(readFileSync(policyPath, 'utf8')) as TeamPolicyConfig)
+  const policy: TeamPolicyConfig | undefined = policyPath
+    ? parseTeamPolicy(JSON.parse(readFileSync(policyPath, 'utf8')))
     : undefined;
+
+  const effectiveMinScore =
+    policy?.minScore !== undefined
+      ? minScoreProvided
+        ? Math.max(policy.minScore, minScore)
+        : policy.minScore
+      : minScore;
+
+  const effectivePolicy: TeamPolicyConfig | undefined =
+    policy || minScoreProvided ? { ...(policy ?? {}), minScore: effectiveMinScore } : undefined;
 
   const tools = configPath
     ? await introspectStdioServers(loadServerSpecsFromConfig(configPath))
     : loadToolsFile(toolsFile!);
 
-  const report = auditMcpTools(tools, { policy });
+  const report = auditMcpTools(tools, { policy: effectivePolicy });
   if (isSarif) {
     console.log(JSON.stringify(toSarifReport(report), null, 2));
   } else if (isJson) {
@@ -115,8 +148,7 @@ async function main() {
   }
 
   if (isCi) {
-    const threshold = policy?.minScore ?? minScore;
-    if (report.score < threshold || report.severityCounts.CRITICAL > 0) {
+    if (!report.ok || report.score < effectiveMinScore || report.severityCounts.CRITICAL > 0) {
       process.exit(1);
     }
   }

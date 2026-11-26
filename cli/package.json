@@ -1,7 +1,6 @@
 {
   "name": "apexhive-mcp-doctor",
   "version": "1.0.1",
-  "mcpName": "io.github.apexhive-hq/mcp-doctor",
   "description": "Free MIT static MCP security, prompt-injection, secret-leak, and context-tax linter for stdio servers and JSON tool catalogs.",
   "license": "MIT",
   "repository": {
@@ -24,7 +23,7 @@
     "mcp-doctor.policy.example.json"
   ],
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

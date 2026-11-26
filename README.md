@@ -1,6 +1,6 @@
 # `mcp-doctor` — Static MCP Security & Context-Tax Linter
 
-> **100% Free & Open Source (MIT)** CLI linter for Model Context Protocol (`MCP`) `tools/list` catalogs: detects regex-based prompt-injection patterns, leaked credentials, missing descriptions, weak JSON schemas, and prompt context-window bloat (`Node.js >= 24`), with built-in `--policy`, `--ci`, and **SARIF 2.1.0** output.
+> **100% Free & Open Source (MIT)** CLI linter for Model Context Protocol (`MCP`) `tools/list` catalogs: detects regex-based prompt-injection patterns, leaked credentials, missing descriptions, weak JSON schemas, and prompt context-window bloat (`Node.js >= 20`), with built-in `--policy`, `--ci`, and **SARIF 2.1.0** output.
 
 ---
 
@@ -8,11 +8,11 @@
 
 ```text
 +-------------------------------------------------------------------+
-|  mcp-doctor CLI (Node >= 24, 100% Free MIT)                       |
+|  mcp-doctor CLI (Node >= 20, 100% Free MIT)                       |
 |  1. Static Rules           -> Prompt-injection patterns, hidden   |
 |                               XML tags, stealth URIs, exfil flags |
-|  2. Secret & Schema Audit  -> AWS/GitHub/Stripe/JWT/PEM leaks,    |
-|                               missing descriptions & JSON types   |
+|  2. Secret & Schema Audit  -> AWS/GitHub/Stripe/JWT/PEM leaks     |
+|                               (redacted evidence), schema checks  |
 |  3. Context-Tax Meter      -> UTF-8 bytes, tokens (~4 B/tok),     |
 |                               top 5 heaviest tool schemas         |
 |  4. Policy & SARIF 2.1.0   -> --policy, --ci --min-score, --json, |
@@ -21,7 +21,7 @@
                                   |  stdio (JSON-RPC 2.0) or JSON
                                   v
 +-------------------------------------------------------------------+
-|  Upstream stdio MCP Servers (--config) or Static JSON (--tools)   |
+| Upstream stdio MCP Servers (--config) or Static JSON (--tools-file)|
 +-------------------------------------------------------------------+
 ```
 
@@ -39,13 +39,15 @@
 
 ---
 
-## Quickstart (`Node.js >= 24.0.0`, Zero Docker)
+## Quickstart (`Node.js >= 20.0.0`, Zero Docker)
 
 ### Instant Run via npm (`npx`)
 
 ```bash
+npx -y apexhive-mcp-doctor --version
 npx -y apexhive-mcp-doctor status
-npx -y apexhive-mcp-doctor audit --tools-file mcp-tools.example.json
+npx -y apexhive-mcp-doctor audit --tools-file ./tools.json
+npx -y apexhive-mcp-doctor audit --config ./mcp-servers.json
 ```
 
 ### Build from Source
@@ -72,4 +74,4 @@ pnpm test
 
 ---
 
-If `mcp-doctor` helped harden your CI pipeline, Base USDC tips are welcome at `0x32eceaC45DBED9E555dAb80346aBd4Ab9C676206`. Support: `apexhive.hq@proton.me`.
+License: MIT · Support: `apexhive.hq@proton.me`.

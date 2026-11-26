@@ -1,8 +1,4 @@
 **/node_modules
 **/dist
-**/.wrangler
-**/.wrangler-state
-storefront/
 .git/
-.dev.vars
 *.log

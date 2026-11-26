@@ -1,14 +1,14 @@
 {
   "name": "apexhive-mcp-doctor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "mcpName": "io.github.apexhive-hq/mcp-doctor",
-  "description": "MCP security, prompt-injection, secret-leak, and context-tax auditor for stdio servers and JSON tool catalogs.",
+  "description": "Free MIT static MCP security, prompt-injection, secret-leak, and context-tax linter for stdio servers and JSON tool catalogs.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apexhive-hq/mcp-doctor.git"
   },
-  "homepage": "https://mcp-doctor-store.apexhive-hq.workers.dev",
+  "homepage": "https://github.com/apexhive-hq/mcp-doctor",
   "type": "module",
   "bin": {
     "mcp-doctor": "dist/src/cli.js",
@@ -36,7 +36,7 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.0",
+    "@types/node": "^24.0.0",
     "typescript": "^5.8.3"
   }
 }

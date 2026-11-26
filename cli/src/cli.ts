@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { auditMcpTools, toSarifReport } from './auditor.js';
-import { loadActivatedLicense, saveActivatedLicense } from './license.js';
 import { introspectStdioServers, loadServerSpecsFromConfig } from './stdio-client.js';
 import type { AuditReport, McpToolInput, TeamPolicyConfig } from './types.js';
 
@@ -23,11 +22,10 @@ function loadToolsFile(filePath: string): McpToolInput[] {
 
 function formatHumanReport(report: AuditReport): string {
   const lines = [
-    `=== ApexHive Labs mcp-doctor Audit ===`,
+    `=== mcp-doctor Static MCP Audit (MIT Open Source) ===`,
     `Score:       ${report.score}/100 (Grade ${report.grade})`,
     `Servers:     ${report.totalServers} | Tools: ${report.totalTools}`,
     `Context Tax: ${report.rawBytes.toLocaleString('en-US')} bytes (~${report.estimatedTokens.toLocaleString('en-US')} tokens)`,
-    `SlimMCP Est: ~${report.slimProxyTokens} tokens (${report.estimatedSavingsPct}% reduction, saves ~${report.tokensSavedWithSlimMcp.toLocaleString('en-US')} tok/turn)`,
     `Findings:    CRITICAL=${report.severityCounts.CRITICAL} HIGH=${report.severityCounts.HIGH} MEDIUM=${report.severityCounts.MEDIUM} LOW=${report.severityCounts.LOW}`
   ];
   if (report.findings.length > 0) {
@@ -39,40 +37,39 @@ function formatHumanReport(report: AuditReport): string {
   return lines.join('\n');
 }
 
-async function main() {
-  const [, , cmd = 'audit', ...args] = process.argv;
+function printHelp(): void {
+  console.log(`mcp-doctor v1.0.1 — Free MIT MCP Security, Secret-Leak & Context-Tax Linter
 
-  if (cmd === 'activate') {
-    const token = getFlagValue(args, '--token');
-    if (!token) {
-      console.error('Usage: node dist/src/cli.js activate --token "<MCPDOC-PRO-v1...>"');
-      process.exit(1);
-    }
-    const { filePath, verification } = saveActivatedLicense(token);
-    console.log(
-      JSON.stringify(
-        {
-          ok: true,
-          filePath,
-          tier: verification.payload?.tier,
-          payer: verification.payload?.payer
-        },
-        null,
-        2
-      )
-    );
+Usage:
+  mcp-doctor audit (--config <mcp-servers.json> | --tools-file <tools.json>) [options]
+  mcp-doctor status
+  mcp-doctor --help
+
+Options:
+  --policy <policy.json>   Apply TeamPolicyConfig thresholds & deny globs
+  --sarif                  Emit SARIF 2.1.0 JSON report
+  --json                   Emit AuditReport JSON
+  --ci                     Exit non-zero if score < min-score or CRITICAL findings exist
+  --min-score <0-100>      Minimum passing score for --ci (default: 70)
+`);
+}
+
+async function main() {
+  const [, , cmd = 'help', ...args] = process.argv;
+
+  if (cmd === 'help' || cmd === '--help' || cmd === '-h' || args.includes('--help') || args.includes('-h')) {
+    printHelp();
     return;
   }
 
   if (cmd === 'status') {
-    const status = loadActivatedLicense();
     console.log(
       JSON.stringify(
         {
-          mode: status.valid ? status.payload?.tier : 'open-source-mit',
-          valid: status.valid,
-          reason: status.reason ?? null,
-          payload: status.payload ?? null
+          mode: 'open-source-mit',
+          license: 'MIT',
+          version: '1.0.1',
+          features: ['audit', 'sarif', 'policy', 'ci-gate']
         },
         null,
         2
@@ -82,7 +79,7 @@ async function main() {
   }
 
   if (cmd !== 'audit') {
-    console.error('Usage: node dist/src/cli.js <audit|activate|status> [options]');
+    console.error('Usage: mcp-doctor <audit|status|--help> [options]');
     process.exit(1);
   }
 
@@ -100,19 +97,9 @@ async function main() {
     process.exit(1);
   }
 
-  let policy: TeamPolicyConfig | undefined;
-  if (policyPath || isSarif) {
-    const lic = loadActivatedLicense();
-    if (!lic.valid || lic.payload?.tier !== 'team') {
-      console.error(
-        `Team Commercial License required for --policy/--sarif (Open-Core MIT audit/--json/--ci stays free at $0). Activate via https://mcp-doctor-store.apexhive-hq.workers.dev. (${lic.reason ?? 'no license'})`
-      );
-      process.exit(2);
-    }
-    if (policyPath) {
-      policy = JSON.parse(readFileSync(policyPath, 'utf8')) as TeamPolicyConfig;
-    }
-  }
+  const policy = policyPath
+    ? (JSON.parse(readFileSync(policyPath, 'utf8')) as TeamPolicyConfig)
+    : undefined;
 
   const tools = configPath
     ? await introspectStdioServers(loadServerSpecsFromConfig(configPath))

@@ -41,10 +41,6 @@ export interface AuditReport {
   totalTools: number;
   rawBytes: number;
   estimatedTokens: number;
-  slimProxyBytes: number;
-  slimProxyTokens: number;
-  tokensSavedWithSlimMcp: number;
-  estimatedSavingsPct: number;
   severityCounts: Record<AuditSeverity, number>;
   topHeaviestTools: ToolWeight[];
   servers: ServerAuditSummary[];
@@ -57,20 +53,4 @@ export interface TeamPolicyConfig {
   blockPromptInjection?: boolean;
   maxTotalTokens?: number;
   denyTools?: string[];
-}
-
-export interface DoctorLicensePayload {
-  v: 1;
-  product: 'mcp-doctor';
-  tier: 'supporter' | 'team';
-  payer: string;
-  txHash: string;
-  issuedAt: number;
-  expiresAt: number | null;
-}
-
-export interface LicenseVerificationResult {
-  valid: boolean;
-  reason?: string;
-  payload?: DoctorLicensePayload;
 }

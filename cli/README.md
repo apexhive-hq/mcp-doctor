@@ -1,6 +1,6 @@
 # `apexhive-mcp-doctor` CLI (`mcp-doctor`)
 
-> Audit Model Context Protocol (MCP) tool catalogs for prompt-injection poisoning, secret leaks, schema defects, and context-window bloat (`Node.js >= 24`, MIT Open Source).
+> 100% Free MIT static linter for Model Context Protocol (MCP) tool catalogs: prompt-injection pattern checks, secret-leak scanning, schema linting, context-tax measurement, CI policy gates, and SARIF 2.1.0 output (`Node.js >= 24`).
 
 ---
 
@@ -27,21 +27,11 @@ node dist/src/cli.js audit --tools-file mcp-tools.example.json
 # Audit live stdio MCP servers from config & emit JSON
 node dist/src/cli.js audit --config mcp-doctor.config.example.json --json
 
-# Enforce CI threshold (exits non-zero if score < min-score)
+# Enforce CI threshold & emit SARIF 2.1.0 (all free MIT)
+node dist/src/cli.js audit --tools-file mcp-tools.example.json --policy mcp-doctor.policy.example.json --sarif
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --ci --min-score 80
 ```
 
-## Policy & License Activation
+---
 
-Optional policy guardrails (`mcp-doctor.policy.json`), SARIF 2.1.0 export (`--sarif`), and offline Ed25519 licenses (`MCPDOC-PRO-v1...`) are supported locally without cloud telemetry:
-
-```bash
-node dist/src/cli.js activate --token "MCPDOC-PRO-v1.<payload>.<signature>"
-node dist/src/cli.js audit --tools-file mcp-tools.example.json --sarif
-```
-
-## License & Support
-
-- Source Code: MIT License
-- Storefront & Live Web Auditor: https://mcp-doctor-store.apexhive-hq.workers.dev
-- Support: `apexhive.hq@proton.me`
+Tips (Base USDC): `0x32eceaC45DBED9E555dAb80346aBd4Ab9C676206` · Support: `apexhive.hq@proton.me`.

@@ -9,9 +9,6 @@ import type {
   ToolWeight
 } from './types.js';
 
-const SLIM_META_BYTES = 1279;
-const SLIM_META_TOKENS = 320;
-
 interface PatternRule {
   ruleId: string;
   severity: AuditSeverity;
@@ -229,11 +226,6 @@ export function auditMcpTools(
 
   const rawBytes = encoder.encode(JSON.stringify({ tools })).length;
   const estimatedTokens = Math.ceil(rawBytes / 4);
-  const tokensSaved = Math.max(0, estimatedTokens - SLIM_META_TOKENS);
-  const estimatedSavingsPct =
-    rawBytes > SLIM_META_BYTES
-      ? Number((((rawBytes - SLIM_META_BYTES) / rawBytes) * 100).toFixed(2))
-      : 0;
 
   // Context-tax bloat penalties
   let bloatPenalty = 0;
@@ -251,7 +243,7 @@ export function auditMcpTools(
       category: 'context-tax',
       server: '*',
       tool: '*',
-      message: `Catalog consumes ~${estimatedTokens.toLocaleString('en-US')} tokens/turn (${rawBytes.toLocaleString('en-US')} bytes). Wrapping with slimmcp-proxy saves ~${tokensSaved.toLocaleString('en-US')} tokens (${estimatedSavingsPct}%).`
+      message: `Catalog consumes ~${estimatedTokens.toLocaleString('en-US')} tokens/turn (${rawBytes.toLocaleString('en-US')} UTF-8 bytes), exceeding recommended prompt context budgets.`
     });
   }
 
@@ -303,10 +295,6 @@ export function auditMcpTools(
     totalTools: tools.length,
     rawBytes,
     estimatedTokens,
-    slimProxyBytes: SLIM_META_BYTES,
-    slimProxyTokens: SLIM_META_TOKENS,
-    tokensSavedWithSlimMcp: tokensSaved,
-    estimatedSavingsPct,
     severityCounts,
     topHeaviestTools,
     servers,
@@ -329,7 +317,7 @@ export function toSarifReport(report: AuditReport) {
         tool: {
           driver: {
             name: 'mcp-doctor',
-            version: '1.0.0',
+            version: '1.0.1',
             informationUri: 'https://github.com/apexhive-hq/mcp-doctor'
           }
         },

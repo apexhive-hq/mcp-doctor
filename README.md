@@ -1,9 +1,6 @@
-# `mcp-doctor` — MCP Security, Prompt-Injection & Context-Tax Auditor
+# `mcp-doctor` — Static MCP Security & Context-Tax Linter
 
-> **Audit Model Context Protocol (MCP) tool catalogs for prompt-injection poisoning, secret leaks, schema defects, and context-window bloat in seconds (`Node.js >= 24`, MIT Open Source).**
-
-- **Live Web Auditor, GitHub Readiness Scanner & `x402` API:** https://mcp-doctor-store.apexhive-hq.workers.dev
-- **Packages:** [`cli/`](./cli/) (`Node >=24`, zero native C++ addons) &bull; [`storefront/`](./storefront/) (Cloudflare Workers live auditor, SVG score badges, `x402 v2` audit API, and Ed25519 license issuer)
+> **100% Free & Open Source (MIT)** CLI linter for Model Context Protocol (`MCP`) `tools/list` catalogs: detects regex-based prompt-injection patterns, leaked credentials, missing descriptions, weak JSON schemas, and prompt context-window bloat (`Node.js >= 24`), with built-in `--policy`, `--ci`, and **SARIF 2.1.0** output.
 
 ---
 
@@ -11,15 +8,15 @@
 
 ```text
 +-------------------------------------------------------------------+
-|  mcp-doctor CLI (Node >= 24) / Edge Auditor Worker                |
-|  1. Context-Tax Meter      -> UTF-8 bytes, tokens (~4 B/tok),     |
-|                               top 5 heaviest schemas, savings est |
-|  2. Poisoning Scanner      -> Prompt injection, hidden XML tags,  |
-|                               exfiltration, suspicious URIs       |
-|  3. Secret & Schema Audit  -> AWS/GitHub/Stripe/JWT/PEM leaks,    |
+|  mcp-doctor CLI (Node >= 24, 100% Free MIT)                       |
+|  1. Static Rules           -> Prompt-injection patterns, hidden   |
+|                               XML tags, stealth URIs, exfil flags |
+|  2. Secret & Schema Audit  -> AWS/GitHub/Stripe/JWT/PEM leaks,    |
 |                               missing descriptions & JSON types   |
-|  4. Score & Grade (A-F)    -> Human, --json, --ci --min-score,    |
-|                               SARIF 2.1.0, & XML-safe SVG badges  |
+|  3. Context-Tax Meter      -> UTF-8 bytes, tokens (~4 B/tok),     |
+|                               top 5 heaviest tool schemas         |
+|  4. Policy & SARIF 2.1.0   -> --policy, --ci --min-score, --json, |
+|                               and SARIF 2.1.0 CI reports          |
 +---------------------------------+---------------------------------+
                                   |  stdio (JSON-RPC 2.0) or JSON
                                   v
@@ -37,8 +34,8 @@
 | **A** | `90–100` | Clean tool descriptions, strong schemas, low context tax, zero poisoning/secret findings |
 | **B** | `80–89` | Minor schema/description warnings; safe defaults |
 | **C** | `70–79` | Noticeable schema bloat or missing metadata |
-| **D** | `55–69` | Heavy context tax or security/poisoning flags (any `CRITICAL` finding caps grade at `<= D`) |
-| **F** | `< 55` | Critical poisoning, secret exposure, or severe schema bloat |
+| **D** | `55–69` | Heavy context tax or security flags (any `CRITICAL` finding caps grade at `<= D`) |
+| **F** | `< 55` | Critical injection pattern, secret exposure, or severe schema bloat |
 
 ---
 
@@ -65,7 +62,8 @@ node dist/src/cli.js audit --tools-file mcp-tools.example.json
 # Audit live stdio MCP servers from config & emit JSON
 node dist/src/cli.js audit --config mcp-doctor.config.example.json --json
 
-# Enforce CI threshold (exits non-zero if score < min-score)
+# Enforce CI policy & emit SARIF 2.1.0 (100% free MIT)
+node dist/src/cli.js audit --tools-file mcp-tools.example.json --policy mcp-doctor.policy.example.json --sarif
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --ci --min-score 80
 
 # Run full unit & real-stdio integration tests
@@ -74,13 +72,4 @@ pnpm test
 
 ---
 
-## Live SVG Badges & `x402 v2` Edge API
-
-- **Web Auditor (`0` Setup):** Visit `https://mcp-doctor-store.apexhive-hq.workers.dev` to audit MCP JSON catalogs or scan public GitHub MCP repositories (`GET /badge/repo/:owner/:repo.svg`).
-- **Agent `x402 v2` Endpoint:** `POST /api/x402/audit` discovers cleanly via `GET /.well-known/x402` and `GET /openapi.json`.
-
----
-
-## License & Commercial Support
-
-MIT Open Source (`$0`). Organizational policy packs (`mcp-doctor.policy.json`), multi-server SARIF CI exports, optional community sponsorship, and offline Ed25519 license tokens are available on the [ApexHive Labs Storefront](https://mcp-doctor-store.apexhive-hq.workers.dev). Support: `apexhive.hq@proton.me`.
+If `mcp-doctor` helped harden your CI pipeline, Base USDC tips are welcome at `0x32eceaC45DBED9E555dAb80346aBd4Ab9C676206`. Support: `apexhive.hq@proton.me`.

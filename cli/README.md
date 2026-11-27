@@ -1,6 +1,6 @@
 # `apexhive-mcp-doctor` CLI (`mcp-doctor`)
 
-> 100% Free MIT static linter for Model Context Protocol (MCP) tool catalogs: prompt-injection pattern checks, secret-leak scanning, schema linting, context-tax measurement, CI policy gates, and SARIF 2.1.0 output (`Node.js >= 20`).
+> Static CLI linter for Model Context Protocol (`MCP`) tool catalogs (`Node.js >= 20`): checks for prompt-injection patterns, leaked credentials (redacted in reports), missing descriptions or untyped schemas, bloated context-tax schemas, CI policy thresholds, and SARIF 2.1.0 output.
 
 ---
 
@@ -29,7 +29,7 @@ node dist/src/cli.js audit --tools-file mcp-tools.example.json
 # Audit live stdio MCP servers from config & emit JSON
 node dist/src/cli.js audit --config mcp-doctor.config.example.json --json
 
-# Enforce CI threshold & emit SARIF 2.1.0 (all free MIT)
+# Enforce CI threshold & emit SARIF 2.1.0
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --policy mcp-doctor.policy.example.json --sarif
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --ci --min-score 80
 ```

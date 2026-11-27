@@ -1,6 +1,6 @@
 # `mcp-doctor` — Static MCP Security & Context-Tax Linter
 
-> **100% Free & Open Source (MIT)** CLI linter for Model Context Protocol (`MCP`) `tools/list` catalogs: detects regex-based prompt-injection patterns, leaked credentials, missing descriptions, weak JSON schemas, and prompt context-window bloat (`Node.js >= 20`), with built-in `--policy`, `--ci`, and **SARIF 2.1.0** output.
+> CLI linter for Model Context Protocol (`MCP`) `tools/list` catalogs (`Node.js >= 20`). Audits stdio servers and static JSON tool definitions for prompt-injection patterns, leaked credentials (with redacted evidence), missing descriptions, untyped JSON schemas, and context-window token bloat, with `--policy`, `--ci`, and **SARIF 2.1.0** output.
 
 ---
 
@@ -8,7 +8,7 @@
 
 ```text
 +-------------------------------------------------------------------+
-|  mcp-doctor CLI (Node >= 20, 100% Free MIT)                       |
+|  mcp-doctor CLI (Node >= 20)                                      |
 |  1. Static Rules           -> Prompt-injection patterns, hidden   |
 |                               XML tags, stealth URIs, exfil flags |
 |  2. Secret & Schema Audit  -> AWS/GitHub/Stripe/JWT/PEM leaks     |
@@ -39,7 +39,7 @@
 
 ---
 
-## Quickstart (`Node.js >= 20.0.0`, Zero Docker)
+## Quickstart (`Node.js >= 20.0.0`)
 
 ### Instant Run via npm (`npx`)
 
@@ -64,7 +64,7 @@ node dist/src/cli.js audit --tools-file mcp-tools.example.json
 # Audit live stdio MCP servers from config & emit JSON
 node dist/src/cli.js audit --config mcp-doctor.config.example.json --json
 
-# Enforce CI policy & emit SARIF 2.1.0 (100% free MIT)
+# Enforce CI policy & emit SARIF 2.1.0
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --policy mcp-doctor.policy.example.json --sarif
 node dist/src/cli.js audit --tools-file mcp-tools.example.json --ci --min-score 80
 

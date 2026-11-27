@@ -43,7 +43,7 @@ function formatHumanReport(report: AuditReport): string {
 }
 
 function printHelp(): void {
-  console.log(`mcp-doctor v${MCP_DOCTOR_VERSION} — Free MIT MCP Security, Secret-Leak & Context-Tax Linter
+  console.log(`mcp-doctor v${MCP_DOCTOR_VERSION} — Static MCP Security, Secret-Leak & Context-Tax Linter (MIT)
 
 Usage:
   mcp-doctor audit (--config <mcp-servers.json> | --tools-file <tools.json>) [options]

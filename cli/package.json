@@ -1,7 +1,7 @@
 {
   "name": "apexhive-mcp-doctor",
-  "version": "1.0.1",
-  "description": "Free MIT static MCP security, prompt-injection, secret-leak, and context-tax linter for stdio servers and JSON tool catalogs.",
+  "version": "1.0.2",
+  "description": "Static CLI security, prompt-injection, secret-leak, and context-tax linter (MIT) for stdio MCP servers and JSON tool catalogs.",
   "license": "MIT",
   "repository": {
     "type": "git",

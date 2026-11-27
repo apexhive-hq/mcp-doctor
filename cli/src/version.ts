@@ -18,7 +18,7 @@ function resolvePackageVersion(): string {
     }
   }
 
-  return '1.0.1';
+  return '1.0.2';
 }
 
 export const MCP_DOCTOR_VERSION = resolvePackageVersion();
